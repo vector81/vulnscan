@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:16-alpine
@@ -11,11 +9,18 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    security_opt:
+      - no-new-privileges:true
 
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
 
   backend:
     build: ./backend
@@ -28,6 +33,8 @@ services:
     volumes:
       - ./backend/app:/app/app
       - /tmp/vulnscan:/tmp/vulnscan
+    security_opt:
+      - no-new-privileges:true
 
   worker:
     build: ./backend
@@ -38,7 +45,11 @@ services:
       - redis
     volumes:
       - /tmp/vulnscan:/tmp/vulnscan
+      # SECURITY NOTE: Docker socket exposure allows container scanning
+      # but grants significant privileges. Remove if not scanning containers.
       - /var/run/docker.sock:/var/run/docker.sock
+    security_opt:
+      - no-new-privileges:true
 
   frontend:
     build: ./frontend
@@ -46,6 +57,12 @@ services:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
 
 volumes:
   pgdata:
