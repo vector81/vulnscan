@@ -44,14 +44,6 @@ Then open:
 - 🌐 **Dashboard**: http://localhost:3000
 - 📚 **API Docs**: http://localhost:8000/docs
 
-## 📸 Screenshots
-
-*Dashboard with scan statistics and distribution*
-
-*Scan list with severity badges and progress indicators*
-
-*Finding details with code snippets*
-
 ## 🏗️ Architecture
 
 ```
